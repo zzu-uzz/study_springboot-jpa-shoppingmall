@@ -20,7 +20,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "item")
 @ToString
-public class Item {
+public class Item extends BaseEntity {
 
     @Id
     @Column(name = "item_id")
@@ -42,9 +42,5 @@ public class Item {
 
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus;
-
-    private LocalDateTime regTime;
-
-    private LocalDateTime updateTime;
 
 }
