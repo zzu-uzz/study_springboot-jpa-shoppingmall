@@ -28,15 +28,6 @@ public class MemberController {
         return "member/memberForm";
     }
 
-//    @PostMapping(value = "/new")
-//    public String memberForm(MemberFormDto memberFormDto) {
-//
-//        Member member = Member.createMember(memberFormDto, passwordEncoder);
-//        memberService.saveMember(member);
-//
-//        return "redirect:/";
-//    }
-
     @PostMapping(value = "/new")
     public String newMember(@Valid MemberFormDto memberFormDto,
         BindingResult bindingResult, Model model) {
