@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,11 +35,11 @@ public class OrderController {
         BindingResult bindingResult,
         Principal principal
     ) {
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             StringBuilder sb = new StringBuilder();
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
 
-            for(FieldError fieldError : fieldErrors) {
+            for (FieldError fieldError : fieldErrors) {
                 sb.append(fieldError.getDefaultMessage());
             }
             return new ResponseEntity<String>(sb.toString(),
@@ -64,15 +63,29 @@ public class OrderController {
         @PathVariable("page") Optional<Integer> page,
         Principal principal,
         Model model
-    ){
+    ) {
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 4);
 
-        Page<OrderHisDto> orderHisDtoList = orderService.getOrderList(principal.getName(), pageable);
+        Page<OrderHisDto> orderHisDtoList = orderService.getOrderList(principal.getName(),
+            pageable);
         model.addAttribute("orders", orderHisDtoList);
         model.addAttribute("page", pageable.getPageNumber());
         model.addAttribute("maxPage", 5);
 
         return "order/orderHist";
+    }
+
+    @PostMapping("/order/{orderId}/cancel")
+    public @ResponseBody ResponseEntity cancelOrder(
+        @PathVariable("orderId") Long orderId, Principal principal
+    ) {
+        if (!orderService.validateOrder(orderId, principal.getName())) {
+            return new ResponseEntity<String>("주문 취소 권한이 없습니다.",
+                HttpStatus.FORBIDDEN);
+        }
+
+        orderService.cancelOrder(orderId);
+        return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }
 
 }
