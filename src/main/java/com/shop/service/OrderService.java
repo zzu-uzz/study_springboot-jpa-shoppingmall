@@ -58,7 +58,7 @@ public class OrderService {
 
         List<OrderHisDto> orderHisDtos = new ArrayList<>();
 
-        for(Order order : orders) {
+        for (Order order : orders) {
             OrderHisDto orderHisDto = new OrderHisDto(order);
             List<OrderItem> orderItems = order.getOrderItems();
 
@@ -84,17 +84,35 @@ public class OrderService {
 
         Member savedMember = order.getMember();
 
-        if(!StringUtils.equals(curMember.getEmail(), savedMember.getEmail())) {
+        if (!StringUtils.equals(curMember.getEmail(), savedMember.getEmail())) {
             return false;
         }
         return true;
     }
-
 
     public void cancelOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
             .orElseThrow(EntityNotFoundException::new);
 
         order.cancelOrder();
+    }
+
+    public Long orders(List<OrderDto> orderDtoList, String email){
+
+        Member member = memberRepository.findByEmail(email);
+        List<OrderItem> orderItemList = new ArrayList<>();
+
+        for (OrderDto orderDto : orderDtoList) {
+            Item item = itemRepository.findById(orderDto.getItemId())
+                .orElseThrow(EntityNotFoundException::new);
+
+            OrderItem orderItem = OrderItem.createOrderItem(item, orderDto.getCount());
+            orderItemList.add(orderItem);
+        }
+
+        Order order = Order.createOrder(member, orderItemList);
+        orderRepository.save(order);
+
+        return order.getId();
     }
 }
