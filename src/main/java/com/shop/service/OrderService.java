@@ -72,7 +72,7 @@ public class OrderService {
             orderHisDtos.add(orderHisDto);
         }
 
-        return new PageImpl<OrderHisDto>(orderHisDtos, pageable, totalCount);
+        return new PageImpl<>(orderHisDtos, pageable, totalCount);
     }
 
     @Transactional(readOnly = true)

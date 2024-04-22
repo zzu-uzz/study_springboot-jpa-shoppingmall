@@ -3,23 +3,24 @@ package com.shop.config;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig
-//    extends
-//    SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity>
-{
+    extends
+    SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
-//    @Autowired
-//    MemberService memberService;
-//    private AuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    private AuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -55,15 +56,20 @@ public class SecurityConfig
         return new BCryptPasswordEncoder();
     }
 
-//
-//        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 //        auth.userDetailsService(memberService)
 //            .passwordEncoder(passwordEncoder());
 //    }
+
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        http
+            .exceptionHandling(exceptionHandling -> exceptionHandling
+                .authenticationEntryPoint(customAuthenticationEntryPoint));
+    }
+
 //    @Override
-//    public void configure(HttpSecurity http) throws Exception {
-//        http
-//            .exceptionHandling(exceptionHandling -> exceptionHandling
-//            .authenticationEntryPoint(customAuthenticationEntryPoint));
+//    public void configure(WebSecurity web) throws Exception {
+//        web.ignoring().requestMatchers("/css/**", "/js/**", "/img/**");
 //    }
 }
